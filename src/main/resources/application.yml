@@ -1,1 +1,20 @@
-spring.application.name=K_Means_Clustering
+#spring.application.name=K_Means_Clustering
+
+spring:
+  application:
+    name: K_Means_Clustering
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  datasource:
+    username: ${db_username}
+    url: ${db_url}
+    password: ${db_password}
+
+server:
+  error:
+    include-message: always
