@@ -23,7 +23,7 @@ public class Country {
     @Id
     private Long idCountry;
     private String nameOfCountry;
-    private Double GPC;
+    private Double GDP;
     private Double birthrate;
     private Double deathrate;
     private Double netMigration;
