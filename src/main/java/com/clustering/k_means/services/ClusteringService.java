@@ -2,6 +2,7 @@ package com.clustering.k_means.services;
 
 import com.clustering.k_means.models.Country;
 import com.clustering.k_means.repository.CountryRepository;
+import com.clustering.k_means.services.measures.Measure;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
@@ -22,14 +23,14 @@ public class ClusteringService {
     private final CountryRepository countryRepository;
 
     @SneakyThrows(Exception.class)
-    public List<Map<String,Object>> clusteredData() {
+    public List<Map<String,Object>> clusteredData(int numberOfClusters, Measure measure) {
         List<Country> countries = countryRepository.findAll();
         Instances data = prepareDataForClustering(countries);
 
         SimpleKMeans kmeans = new SimpleKMeans();
-        kmeans.setNumClusters(3);
+        kmeans.setNumClusters(numberOfClusters);
         kmeans.setPreserveInstancesOrder(true);
-        kmeans.setDistanceFunction(new EuclideanDistance());
+        kmeans.setDistanceFunction(setMeasures(measure));
         kmeans.buildClusterer(data);
 
         int[] assignments = kmeans.getAssignments();
@@ -57,6 +58,10 @@ public class ClusteringService {
 
     }
 
+    private DistanceFunction setMeasures(Measure measure) {
+        return measure.getMeasureStatus();
+    }
+
     private Instances prepareDataForClustering(List<Country> countries) {
         FastVector attributes = new FastVector();
         attributes.addElement(new Attribute("GDP"));
@@ -72,10 +77,12 @@ public class ClusteringService {
 
         Instances data = new Instances("Clustering", attributes, countries.size());
 
-        for (Country country : countries) {
-            Instance instance = getInstance(country);
-            data.add(instance);
-        }
+        countries.forEach(
+                country -> {
+                    Instance instance = getInstance(country);
+                    data.add(instance);
+                }
+        );
 
         return standardization(data);
     }
