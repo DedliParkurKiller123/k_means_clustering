@@ -7,6 +7,8 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import weka.clusterers.SimpleKMeans;
 import weka.core.*;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.Standardize;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +24,6 @@ public class ClusteringService {
     @SneakyThrows(Exception.class)
     public List<Map<String,Object>> clusteredData() {
         List<Country> countries = countryRepository.findAll();
-//        System.out.println(countries);
         Instances data = prepareDataForClustering(countries);
 
         SimpleKMeans kmeans = new SimpleKMeans();
@@ -76,7 +77,14 @@ public class ClusteringService {
             data.add(instance);
         }
 
-        return data;
+        return standardization(data);
+    }
+
+    @SneakyThrows(Exception.class)
+    private Instances standardization(Instances data) {
+        Standardize standardize = new Standardize();
+        standardize.setInputFormat(data);
+        return Filter.useFilter(data, standardize);
     }
 
     private Instance getInstance(Country country) {
