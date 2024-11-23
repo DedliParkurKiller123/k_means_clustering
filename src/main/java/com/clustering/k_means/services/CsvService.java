@@ -9,6 +9,7 @@ import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 import com.opencsv.enums.CSVReaderNullFieldIndicator;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class CountryService {
+public class CsvService {
 
     private final CountryRepository countryRepository;
 
@@ -46,17 +47,11 @@ public class CountryService {
                     .build();
             return csvToBean.parse()
                     .stream()
-                    .filter(c-> c.getCountry()!=null
-                            && c.getGdpPerCapita()!=null
-                            && c.getBirthrate()!=null
-                            && c.getDeathrate()!=null
-                            && c.getNetMigration()!=null
-                            && c.getInfantMortality()!=null
-                            && c.getLiteracy()!=null
-                            && c.getPhonesPer1000()!=null
-                            && c.getPopDensity()!=null
-                            && c.getIndustry()!=null
-                            && c.getService()!=null
+                    .filter(c-> ObjectUtils.allNotNull(
+                            c.getCountry(),c.getGdpPerCapita(), c.getBirthrate(),
+                            c.getDeathrate(), c.getNetMigration(), c.getInfantMortality(),
+                            c.getLiteracy(), c.getPhonesPer1000(), c.getPopDensity(),
+                            c.getIndustry(), c.getService())
                     )
                     .map(csvLine -> Country.builder()
                             .nameOfCountry(csvLine.getCountry())
@@ -71,18 +66,8 @@ public class CountryService {
                             .industry(csvLine.getIndustry())
                             .service(csvLine.getService())
                             .build()
-                    ).collect(Collectors.toSet());
+                    )
+                    .collect(Collectors.toSet());
         }
     }
 }
-//private String nameOfCountry;
-//private Double GDP;
-//private Double birthrate;
-//private Double deathrate;
-//private Double netMigration;
-//private Double infantMortality;
-//private Double literacy;
-//private Double phones;
-//private Double popDensity;
-//private Double industry;
-//private Double service;
