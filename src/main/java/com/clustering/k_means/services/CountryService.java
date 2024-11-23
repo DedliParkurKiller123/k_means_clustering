@@ -1,11 +1,12 @@
 package com.clustering.k_means.services;
 
-import com.clustering.k_means.CsvRepresentation.CountriesCsvRepresentation;
+import com.clustering.k_means.csvRepresentation.CountriesCsvRepresentation;
 import com.clustering.k_means.models.Country;
 import com.clustering.k_means.repository.CountryRepository;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
+import com.opencsv.enums.CSVReaderNullFieldIndicator;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,8 @@ public class CountryService {
 
     public Integer uploadCountries(MultipartFile file) {
         Set<Country> countries = parseCsv(file);
-        return null;
+        countryRepository.saveAll(countries);
+        return countries.size();
      }
 
     @SneakyThrows(IOException.class)
@@ -40,9 +42,22 @@ public class CountryService {
                     .withMappingStrategy(strategy)
                     .withIgnoreEmptyLine(true)
                     .withIgnoreLeadingWhiteSpace(true)
+                    .withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_SEPARATORS)
                     .build();
             return csvToBean.parse()
                     .stream()
+                    .filter(c-> c.getCountry()!=null
+                            && c.getGdpPerCapita()!=null
+                            && c.getBirthrate()!=null
+                            && c.getDeathrate()!=null
+                            && c.getNetMigration()!=null
+                            && c.getInfantMortality()!=null
+                            && c.getLiteracy()!=null
+                            && c.getPhonesPer1000()!=null
+                            && c.getPopDensity()!=null
+                            && c.getIndustry()!=null
+                            && c.getService()!=null
+                    )
                     .map(csvLine -> Country.builder()
                             .nameOfCountry(csvLine.getCountry())
                             .GDP(csvLine.getGdpPerCapita())
