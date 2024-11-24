@@ -7,6 +7,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 50
+        order_updates: true
     hibernate:
       ddl-auto: create-drop
     show-sql: true
@@ -18,3 +21,4 @@ spring:
 server:
   error:
     include-message: always
+

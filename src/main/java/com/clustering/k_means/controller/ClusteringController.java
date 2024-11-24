@@ -19,8 +19,8 @@ public class ClusteringController {
 
     private final ClusteringService clusteringService;
 
-    @GetMapping("/getShoto")
-    public ResponseEntity<List<Map<String,Object>>> getShoto(
+    @GetMapping("/do-clustering")
+    public ResponseEntity<List<Map<String,Object>>> doClustering(
             @RequestParam("clusters") Integer cluster,
             @RequestParam("measure") Measure measure ) {
         return ResponseEntity.ok(clusteringService.clusteredData(cluster, measure));

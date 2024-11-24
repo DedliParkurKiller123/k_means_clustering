@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
@@ -26,6 +27,7 @@ public class CsvService {
 
     private final CountryRepository countryRepository;
 
+    @Transactional
     public Integer uploadCountries(MultipartFile file) {
         Set<Country> countries = parseCsv(file);
         countryRepository.saveAll(countries);
