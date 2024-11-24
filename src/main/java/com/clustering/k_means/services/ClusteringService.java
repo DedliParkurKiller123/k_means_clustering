@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import weka.clusterers.SimpleKMeans;
 import weka.core.*;
 import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.PrincipalComponents;
 import weka.filters.unsupervised.attribute.Standardize;
-
 import java.util.*;
 
 @Service
@@ -19,8 +19,11 @@ public class ClusteringService {
 
     private final CountryRepository countryRepository;
 
+    private final List<Map<String,Object>> allData = new ArrayList<>();
+    private final List<Map<String,Object>> pointData = new ArrayList<>();
+
     @SneakyThrows(Exception.class)
-    public List<Map<String,Object>> clusteredData(int numberOfClusters, Measure measure) {
+    public Boolean clusteredData(int numberOfClusters, Measure measure) {
         List<Country> countries = countryRepository.findAll();
         Instances data = prepareDataForClustering(countries);
 
@@ -28,29 +31,85 @@ public class ClusteringService {
         kmeans.setNumClusters(numberOfClusters);
         kmeans.setPreserveInstancesOrder(true);
         kmeans.setDistanceFunction(setMeasures(measure));
-        kmeans.buildClusterer(data);
+        doAllData(countries,data, kmeans);
+        doPointData(data,kmeans);
+        return true;
+    }
+
+    public List<Map<String, Object>> getPointClusteredData() {
+        return pointData;
+    }
+
+    public List<Map<String, Object>> getAllClusteredData() {
+        return allData;
+    }
+
+    @SneakyThrows(Exception.class)
+    private void doPointData(Instances data, SimpleKMeans kmeans) {
+        PrincipalComponents pca = new PrincipalComponents();
+        pca.setMaximumAttributes(2);
+        pca.setInputFormat(data);
+
+        Instances reducedData = Filter.useFilter(data, pca);
+        kmeans.buildClusterer(reducedData);
 
         int[] assignments = kmeans.getAssignments();
 
-        List<Map<String, Object>> result = new ArrayList<>();
-        for (int i = 0; i < assignments.length; i++) {
-            Map<String, Object> clusterInfo = new HashMap<>();
-            clusterInfo.put("idCountry", countries.get(i).getIdCountry());
-            clusterInfo.put("nameOfCountry", countries.get(i).getNameOfCountry());
-            clusterInfo.put("GDP", countries.get(i).getGDP());
-            clusterInfo.put("birthrate", countries.get(i).getBirthrate());
-            clusterInfo.put("deathrate", countries.get(i).getDeathrate());
-            clusterInfo.put("netMigration", countries.get(i).getNetMigration());
-            clusterInfo.put("infantMortality", countries.get(i).getInfantMortality());
-            clusterInfo.put("literacy", countries.get(i).getLiteracy());
-            clusterInfo.put("phones", countries.get(i).getPhones());
-            clusterInfo.put("popDensity", countries.get(i).getPopDensity());
-            clusterInfo.put("industry", countries.get(i).getIndustry());
-            clusterInfo.put("service", countries.get(i).getService());
-            clusterInfo.put("clusterId", assignments[i]);
-            result.add(clusterInfo);
+        Attribute clusterAttribute = new Attribute("cluster");
+        reducedData.insertAttributeAt(clusterAttribute, reducedData.numAttributes());
+
+        for(int i =0;i< reducedData.numInstances();i++){
+            reducedData.instance(i).setValue(reducedData.numAttributes()-1, assignments[i]);
         }
-        return result;
+        pointData.addAll(convertData(reducedData));
+    }
+
+    @SneakyThrows(Exception.class)
+    private void doAllData(List<Country> countries,Instances data, SimpleKMeans kmeans) {
+        kmeans.buildClusterer(data);
+        int[] assignments = kmeans.getAssignments();
+        for (int i = 0; i < assignments.length; i++) {
+            Map<String, Object> clusterInfo = getStringObjectMap(countries, i, assignments);
+            allData.add(clusterInfo);
+        }
+    }
+
+    @SneakyThrows(Exception.class)
+    private Instances standardization(Instances data) {
+        Standardize standardize = new Standardize();
+        standardize.setInputFormat(data);
+        return Filter.useFilter(data, standardize);
+    }
+
+    private Map<String, Object> getStringObjectMap(List<Country> countries, int i, int[] assignments) {
+        Map<String, Object> clusterInfo = new HashMap<>();
+        clusterInfo.put("idCountry", countries.get(i).getIdCountry());
+        clusterInfo.put("nameOfCountry", countries.get(i).getNameOfCountry());
+        clusterInfo.put("GDP", countries.get(i).getGDP());
+        clusterInfo.put("birthrate", countries.get(i).getBirthrate());
+        clusterInfo.put("deathrate", countries.get(i).getDeathrate());
+        clusterInfo.put("netMigration", countries.get(i).getNetMigration());
+        clusterInfo.put("infantMortality", countries.get(i).getInfantMortality());
+        clusterInfo.put("literacy", countries.get(i).getLiteracy());
+        clusterInfo.put("phones", countries.get(i).getPhones());
+        clusterInfo.put("popDensity", countries.get(i).getPopDensity());
+        clusterInfo.put("industry", countries.get(i).getIndustry());
+        clusterInfo.put("service", countries.get(i).getService());
+        clusterInfo.put("clusterId", assignments[i]);
+        return clusterInfo;
+    }
+
+    private List<Map<String, Object>> convertData(Instances reducedData) {
+        List<Map<String,Object>> data = new ArrayList<>();
+        for (int i = 0; i < reducedData.numInstances(); i++) {
+            Instance instance = reducedData.instance(i);
+            Map<String,Object> point = new HashMap<>();
+            point.put("x",instance.value(0));
+            point.put("y",instance.value(1));
+            point.put("cluster",(int)instance.value(reducedData.numAttributes()-1));
+            data.add(point);
+        }
+        return data;
     }
 
     private DistanceFunction setMeasures(Measure measure) {
@@ -79,13 +138,6 @@ public class ClusteringService {
         );
 
         return standardization(data);
-    }
-
-    @SneakyThrows(Exception.class)
-    private Instances standardization(Instances data) {
-        Standardize standardize = new Standardize();
-        standardize.setInputFormat(data);
-        return Filter.useFilter(data, standardize);
     }
 
     private Instance getInstance(Country country) {
