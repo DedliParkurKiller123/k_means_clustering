@@ -11,10 +11,7 @@ import weka.core.*;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Standardize;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -53,9 +50,7 @@ public class ClusteringService {
             clusterInfo.put("clusterId", assignments[i]);
             result.add(clusterInfo);
         }
-
         return result;
-
     }
 
     private DistanceFunction setMeasures(Measure measure) {
@@ -76,7 +71,6 @@ public class ClusteringService {
         attributes.addElement(new Attribute("service"));
 
         Instances data = new Instances("Clustering", attributes, countries.size());
-
         countries.forEach(
                 country -> {
                     Instance instance = getInstance(country);
