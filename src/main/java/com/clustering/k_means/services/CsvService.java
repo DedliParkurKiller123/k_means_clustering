@@ -28,9 +28,7 @@ public class CsvService {
 
     public Integer uploadCountries(MultipartFile file) {
         Set<Country> countries = parseCsv(file);
-        countryRepository.saveAll(()->{
-
-        });
+        countryRepository.saveAll(countries);
         return countries.size();
      }
 
