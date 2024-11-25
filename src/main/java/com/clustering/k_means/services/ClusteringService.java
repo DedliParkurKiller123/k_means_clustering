@@ -6,12 +6,15 @@ import com.clustering.k_means.services.measures.Measure;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import weka.clusterers.SimpleKMeans;
 import weka.core.*;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.PrincipalComponents;
 import weka.filters.unsupervised.attribute.Standardize;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -23,10 +26,12 @@ public class ClusteringService {
     private final List<Map<String,Object>> pointData = new ArrayList<>();
 
     @SneakyThrows(Exception.class)
+    @Transactional
     public String clusteredData(int numberOfClusters, Measure measure) {
         allData.clear();
         pointData.clear();
-        List<Country> countries = countryRepository.findAll();
+        List<Country> countries = getAllCountriesRecords();
+
         Instances data = prepareDataForClustering(countries);
 
         SimpleKMeans kmeans = new SimpleKMeans();
@@ -35,6 +40,12 @@ public class ClusteringService {
         kmeans.setDistanceFunction(setMeasures(measure));
         return doAllData(countries, data, kmeans) && doPointData(data, kmeans)
                 ? "Clustering is successful":"Clustering is unsuccessful";
+    }
+
+    private List<Country> getAllCountriesRecords() {
+        try(Stream<Country> countryStream= countryRepository.findCountriesStream()){
+            return countryStream.collect(Collectors.toList());
+        }
     }
 
     public List<Map<String, Object>> getPointClusteredData() {
