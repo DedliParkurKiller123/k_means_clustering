@@ -1,6 +1,6 @@
 package com.clustering.k_means.services;
 
-import com.clustering.k_means.csvRepresentation.CountriesCsvRepresentation;
+import com.clustering.k_means.services.csvRepresentation.CountriesCsvRepresentation;
 import com.clustering.k_means.models.Country;
 import com.clustering.k_means.repository.CountryRepository;
 import com.opencsv.bean.CsvToBean;

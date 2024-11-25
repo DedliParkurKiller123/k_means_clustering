@@ -1,4 +1,4 @@
-package com.clustering.k_means.csvRepresentation;
+package com.clustering.k_means.services.csvRepresentation;
 
 import com.opencsv.bean.CsvBindByName;
 import lombok.AllArgsConstructor;
