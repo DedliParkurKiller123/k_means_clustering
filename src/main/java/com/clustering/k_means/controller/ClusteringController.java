@@ -36,4 +36,9 @@ public class ClusteringController {
         return ResponseEntity.ok(clusteringService.getPointClusteredData());
     }
 
+    @GetMapping("/get-point-centroids-clustering-data")
+    public ResponseEntity<List<Map<String,Double>>> getCentroidsClusteringData() {
+        return ResponseEntity.ok(clusteringService.getCentroidsClusteredData());
+    }
+
 }

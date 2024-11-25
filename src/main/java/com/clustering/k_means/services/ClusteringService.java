@@ -6,7 +6,6 @@ import com.clustering.k_means.services.measures.Measure;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import weka.clusterers.SimpleKMeans;
 import weka.core.*;
@@ -25,6 +24,7 @@ public class ClusteringService {
 
     private final List<Map<String,Object>> allData = new ArrayList<>();
     private final List<Map<String,Object>> pointData = new ArrayList<>();
+    private final List<Map<String,Double>> centroids = new ArrayList<>();
 
     @SneakyThrows(Exception.class)
     @Transactional
@@ -40,7 +40,8 @@ public class ClusteringService {
         kmeans.setPreserveInstancesOrder(true);
         kmeans.setDistanceFunction(setMeasures(measure));
         return doAllData(countries, data, kmeans) && doPointData(data, kmeans)
-                ? "Clustering is successful":"Clustering is unsuccessful";
+                ? "Clustering is successful"
+                : "Clustering is unsuccessful";
     }
 
     private List<Country> getAllCountriesRecords() {
@@ -65,7 +66,7 @@ public class ClusteringService {
 
         Instances reducedData = Filter.useFilter(data, pca);
         kmeans.buildClusterer(reducedData);
-
+        centroids.addAll(findCentroidsFromKmeans(kmeans));
         int[] assignments = kmeans.getAssignments();
 
         Attribute clusterAttribute = new Attribute("cluster");
@@ -180,5 +181,18 @@ public class ClusteringService {
             return false;
         }
         return Arrays.stream(kmeans.getClusterSizes()).noneMatch(size -> size == 0);
+    }
+
+    public List<Map<String, Double>> getCentroidsClusteredData() {
+        return centroids;
+    }
+
+    private List<Map<String, Double>> findCentroidsFromKmeans(SimpleKMeans kMeans) {
+        return kMeans.getClusterCentroids().stream().map(obj->{
+            Map<String, Double> centroid = new HashMap<>();
+            centroid.put("XCentroid",obj.value(0));
+            centroid.put("YCentroid",obj.value(1));
+            return centroid;
+        }).collect(Collectors.toList());
     }
 }

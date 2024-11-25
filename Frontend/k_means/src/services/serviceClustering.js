@@ -18,3 +18,7 @@ export const getAllData = () => {
 export const getPointData = () => {
     return axios.get(`${API_URL}/get-point-clustering-data`);
 };
+
+export const getCentroidsData = () => {
+    return axios.get(`${API_URL}/get-point-centroids-clustering-data`);
+};
