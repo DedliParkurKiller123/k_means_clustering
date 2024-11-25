@@ -23,7 +23,9 @@ public class ClusteringService {
     private final List<Map<String,Object>> pointData = new ArrayList<>();
 
     @SneakyThrows(Exception.class)
-    public Boolean clusteredData(int numberOfClusters, Measure measure) {
+    public String clusteredData(int numberOfClusters, Measure measure) {
+        allData.clear();
+        pointData.clear();
         List<Country> countries = countryRepository.findAll();
         Instances data = prepareDataForClustering(countries);
 
@@ -31,9 +33,8 @@ public class ClusteringService {
         kmeans.setNumClusters(numberOfClusters);
         kmeans.setPreserveInstancesOrder(true);
         kmeans.setDistanceFunction(setMeasures(measure));
-        doAllData(countries,data, kmeans);
-        doPointData(data,kmeans);
-        return true;
+        return doAllData(countries, data, kmeans) && doPointData(data, kmeans)
+                ? "Clustering is successful":"Clustering is unsuccessful";
     }
 
     public List<Map<String, Object>> getPointClusteredData() {
@@ -45,7 +46,7 @@ public class ClusteringService {
     }
 
     @SneakyThrows(Exception.class)
-    private void doPointData(Instances data, SimpleKMeans kmeans) {
+    private Boolean doPointData(Instances data, SimpleKMeans kmeans) {
         PrincipalComponents pca = new PrincipalComponents();
         pca.setMaximumAttributes(2);
         pca.setInputFormat(data);
@@ -62,16 +63,18 @@ public class ClusteringService {
             reducedData.instance(i).setValue(reducedData.numAttributes()-1, assignments[i]);
         }
         pointData.addAll(convertData(reducedData));
+        return isClusteringSuccessful(kmeans);
     }
 
     @SneakyThrows(Exception.class)
-    private void doAllData(List<Country> countries,Instances data, SimpleKMeans kmeans) {
+    private Boolean doAllData(List<Country> countries,Instances data, SimpleKMeans kmeans) {
         kmeans.buildClusterer(data);
         int[] assignments = kmeans.getAssignments();
         for (int i = 0; i < assignments.length; i++) {
             Map<String, Object> clusterInfo = getStringObjectMap(countries, i, assignments);
             allData.add(clusterInfo);
         }
+        return isClusteringSuccessful(kmeans);
     }
 
     @SneakyThrows(Exception.class)
@@ -153,5 +156,17 @@ public class ClusteringService {
         instance.setValue(8, country.getIndustry());
         instance.setValue(9, country.getService());
         return instance;
+    }
+
+    @SneakyThrows(Exception.class)
+    public boolean isClusteringSuccessful(SimpleKMeans kmeans) {
+        Instances centroids = kmeans.getClusterCentroids();
+        if (centroids == null || centroids.numInstances() == 0) {
+            return false;
+        }
+        if (kmeans.getSquaredError() <= 0) {
+            return false;
+        }
+        return Arrays.stream(kmeans.getClusterSizes()).noneMatch(size -> size == 0);
     }
 }

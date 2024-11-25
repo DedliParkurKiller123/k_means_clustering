@@ -20,7 +20,7 @@ public class ClusteringController {
     private final ClusteringService clusteringService;
 
     @GetMapping("/do-clustering")
-    public ResponseEntity<Boolean> doClustering(
+    public ResponseEntity<String> doClustering(
             @RequestParam("clusters") Integer cluster,
             @RequestParam("measure") Measure measure ) {
         return ResponseEntity.ok(clusteringService.clusteredData(cluster, measure));

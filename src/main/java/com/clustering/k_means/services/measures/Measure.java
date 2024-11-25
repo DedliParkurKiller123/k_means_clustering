@@ -11,8 +11,8 @@ public enum Measure {
 
     EUCLIDEAN(new EuclideanDistance()),
     MANHATTAN(new ManhattanDistance()),
-    CHEBYSHEV(new ChebyshevDistance()),
-    MINKOWSKI(new MinkowskiDistance());
+//    CHEBYSHEV(new ChebyshevDistance()),
+    MINKOWSKI(new ManhattanDistance());
 
     private final DistanceFunction measureStatus;
 }
