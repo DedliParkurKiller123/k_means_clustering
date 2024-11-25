@@ -31,7 +31,7 @@ const CentroidsChart = () => {
     }
 
     if (error) {
-        return <p style={{ color: 'red' }}>{error}</p>;
+        return <p className="error-message">{error}</p>;
     }
 
     const datasets = data.reduce((clusters, point) => {
@@ -77,7 +77,7 @@ const CentroidsChart = () => {
     };
 
     return (
-        <div>
+        <div className="chart-container">
             <h1>Centroids Scatter Chart</h1>
             <Scatter data={chartData} options={chartOptions} />
         </div>

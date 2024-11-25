@@ -28,18 +28,19 @@ const ReadCSVComponent = () => {
     };
 
     return (
-        <div>
+        <div className="upload-container">
             <h1>Upload CSV File</h1>
-            <form onSubmit={handleUpload}>
+            <form onSubmit={handleUpload} className="upload-form">
                 <input 
                     type="file" 
                     accept=".csv" 
                     onChange={handleFileChange} 
+                    className="file-input"
                 />
-                <button type="submit">Upload</button>
+                <button type="submit" className="submit-button">Upload</button>
             </form>
-            {response && <p>Response from server: {response}</p>}
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {response && <p className="response-message">Response from server: {response}</p>}
+            {error && <p className="error-message">{error}</p>}
         </div>
     );
 };

@@ -27,13 +27,13 @@ const ClusteringDataTable = () => {
     }
 
     if (error) {
-        return <p style={{ color: 'red' }}>{error}</p>;
+        return <p className="error-message">{error}</p>;
     }
 
     return (
-        <div>
+        <div className="table-container">
             <h1>Clustering Data</h1>
-            <table border="1" style={{ borderCollapse: 'collapse', width: '100%' }}>
+            <table className="clustering-table">
                 <thead>
                     <tr>
                         <th>ID</th>

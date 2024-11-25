@@ -26,24 +26,26 @@ const DoClusteringComponent = () => {
     };
 
     return (
-        <div>
+        <div className="clustering-container">
             <h1>Perform Clustering</h1>
-            <form onSubmit={handleClustering}>
-                <div>
+            <form onSubmit={handleClustering} className="clustering-form">
+                <div className="form-group">
                     <label>Number of Clusters:</label>
                     <input
                         type="number"
                         value={numberOfClusters}
                         onChange={(e) => setNumberOfClusters(e.target.value)}
                         required
+                        className="input-field"
                     />
                 </div>
-                <div>
+                <div className="form-group">
                     <label>Measure:</label>
                     <select
                         value={measure}
                         onChange={(e) => setMeasure(e.target.value)}
                         required
+                        className="select-field"
                     >
                         <option value="">Select Measure</option>
                         <option value="EUCLIDEAN">Euclidean</option>
@@ -51,12 +53,12 @@ const DoClusteringComponent = () => {
                         <option value="MINKOWSKI">Minkowski</option>
                     </select>
                 </div>
-                <button type="submit">Start Clustering</button>
+                <button type="submit" className="submit-button">Start Clustering</button>
             </form>
             {result !== null && (
-                <p>Clustering successful: {result ? 'Yes' : 'No'}</p>
+                <p className="result-message">Clustering successful: {result ? 'Yes' : 'No'}</p>
             )}
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {error && <p className="error-message">{error}</p>}
         </div>
     );
 };

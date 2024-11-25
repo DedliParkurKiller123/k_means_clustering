@@ -1,13 +1,76 @@
+/* General styles */
 body {
+  font-family: Arial, sans-serif;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  padding: 0;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+h1 {
+  color: #333;
+  text-align: center;
+}
+
+/* For forms */
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+input[type="file"], input[type="number"], select {
+  margin: 10px 0;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Error and response messages */
+.error-message {
+  color: red;
+  text-align: center;
+}
+
+.response-message {
+  color: green;
+  text-align: center;
+}
+
+/* Chart container */
+.chart-container {
+  width: 90%;
+  margin: auto;
+}
+
+/* Table container */
+.table-container {
+  margin: 20px;
+}
+
+.clustering-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.clustering-table th, .clustering-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+.clustering-table th {
+  background-color: #f4f4f4;
 }
