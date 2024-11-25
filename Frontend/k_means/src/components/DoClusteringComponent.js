@@ -48,7 +48,6 @@ const DoClusteringComponent = () => {
                         <option value="">Select Measure</option>
                         <option value="EUCLIDEAN">Euclidean</option>
                         <option value="MANHATTAN">Manhattan</option>
-                        <option value="CHEBYSHEV">Chebyshev</option>
                         <option value="MINKOWSKI">Minkowski</option>
                     </select>
                 </div>
