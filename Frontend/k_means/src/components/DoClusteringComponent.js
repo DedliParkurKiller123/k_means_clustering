@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Для навігації
 import { doClustering } from '../services/serviceClustering'; 
 
 const DoClusteringComponent = () => {
     const [numberOfClusters, setNumberOfClusters] = useState('');
     const [measure, setMeasure] = useState('');
-    const [result, setResult] = useState(null);
     const [error, setError] = useState(null);
+    const navigate = useNavigate(); // Хук навігації
 
     const handleClustering = async (event) => {
         event.preventDefault();
@@ -16,9 +17,9 @@ const DoClusteringComponent = () => {
         }
 
         try {
-            const response = await doClustering(numberOfClusters, measure);
-            setResult(response.data); 
+            await doClustering(numberOfClusters, measure);
             setError(null);
+            navigate('/results'); // Перехід після успіху
         } catch (err) {
             setError('Error during clustering. Please try again.');
             console.error(err);
@@ -55,9 +56,6 @@ const DoClusteringComponent = () => {
                 </div>
                 <button type="submit" className="submit-button">Start Clustering</button>
             </form>
-            {result !== null && (
-                <p className="result-message">Clustering successful: {result ? 'Yes' : 'No'}</p>
-            )}
             {error && <p className="error-message">{error}</p>}
         </div>
     );

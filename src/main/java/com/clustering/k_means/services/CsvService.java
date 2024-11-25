@@ -29,6 +29,7 @@ public class CsvService {
 
     @Transactional
     public Integer uploadCountries(MultipartFile file) {
+        clearRecords(countryRepository);
         Set<Country> countries = parseCsv(file);
         countryRepository.saveAll(countries);
         return countries.size();
@@ -70,6 +71,12 @@ public class CsvService {
                             .build()
                     )
                     .collect(Collectors.toSet());
+        }
+    }
+
+    private void clearRecords(CountryRepository countryRepository) {
+        if (countryRepository.count() != 0){
+            countryRepository.deleteAll();
         }
     }
 }

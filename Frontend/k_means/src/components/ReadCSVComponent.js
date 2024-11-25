@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; 
 import { readCSV } from '../services/serviceCSV'; 
 
 const ReadCSVComponent = () => {
     const [file, setFile] = useState(null);
-    const [response, setResponse] = useState(null);
     const [error, setError] = useState(null);
+    const navigate = useNavigate(); 
 
     const handleFileChange = (event) => {
         setFile(event.target.files[0]);
@@ -18,9 +19,9 @@ const ReadCSVComponent = () => {
         }
 
         try {
-            const result = await readCSV(file);
-            setResponse(result.data); 
+            await readCSV(file); 
             setError(null);
+            navigate('/doClustering');
         } catch (err) {
             setError('Error uploading file. Please try again.');
             console.error(err);
@@ -39,7 +40,6 @@ const ReadCSVComponent = () => {
                 />
                 <button type="submit" className="submit-button">Upload</button>
             </form>
-            {response && <p className="response-message">Response from server: {response}</p>}
             {error && <p className="error-message">{error}</p>}
         </div>
     );

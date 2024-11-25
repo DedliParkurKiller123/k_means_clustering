@@ -34,6 +34,3 @@ public class Country {
     private Double industry;
     private Double service;
 }
-
-
-//Australia ,"29000","12,14","7,51","3,98","4,69","100,0","565,5","2,6","0,262","0,7"

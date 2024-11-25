@@ -31,6 +31,7 @@ public class ClusteringService {
     public String clusteredData(int numberOfClusters, Measure measure) {
         allData.clear();
         pointData.clear();
+        centroids.clear();
         List<Country> countries = getAllCountriesRecords();
 
         Instances data = prepareDataForClustering(countries);
