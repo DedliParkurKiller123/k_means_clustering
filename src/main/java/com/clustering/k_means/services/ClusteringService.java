@@ -3,6 +3,7 @@ package com.clustering.k_means.services;
 import com.clustering.k_means.models.Country;
 import com.clustering.k_means.repository.CountryRepository;
 import com.clustering.k_means.services.measures.Measure;
+import com.clustering.k_means.services.normalizations.Normalization;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import weka.clusterers.SimpleKMeans;
 import weka.core.*;
 import weka.filters.Filter;
+import weka.filters.UnsupervisedFilter;
+import weka.filters.unsupervised.attribute.Normalize;
 import weka.filters.unsupervised.attribute.PrincipalComponents;
 import weka.filters.unsupervised.attribute.Standardize;
 import java.util.*;
@@ -28,13 +31,15 @@ public class ClusteringService {
 
     @SneakyThrows(Exception.class)
     @Transactional
-    public String clusteredData(int numberOfClusters, Measure measure) {
+    public String clusteredData(int numberOfClusters
+            , Measure measure
+            , Normalization normalization) {
         allData.clear();
         pointData.clear();
         centroids.clear();
         List<Country> countries = getAllCountriesRecords();
 
-        Instances data = prepareDataForClustering(countries);
+        Instances data = prepareDataForClustering(countries, normalization);
 
         SimpleKMeans kmeans = new SimpleKMeans();
         kmeans.setNumClusters(numberOfClusters);
@@ -76,6 +81,7 @@ public class ClusteringService {
         for(int i =0;i< reducedData.numInstances();i++){
             reducedData.instance(i).setValue(reducedData.numAttributes()-1, assignments[i]);
         }
+        System.out.println(reducedData);
         pointData.addAll(convertData(reducedData));
         return isClusteringSuccessful(kmeans);
     }
@@ -88,14 +94,37 @@ public class ClusteringService {
             Map<String, Object> clusterInfo = getStringObjectMap(countries, i, assignments);
             allData.add(clusterInfo);
         }
+        System.out.println(data);
         return isClusteringSuccessful(kmeans);
     }
 
     @SneakyThrows(Exception.class)
-    private Instances standardization(Instances data) {
-        Standardize standardize = new Standardize();
-        standardize.setInputFormat(data);
-        return Filter.useFilter(data, standardize);
+    private Instances standardization(Instances data, Normalization normalization) {
+//        Standardize standardize = new Standardize();
+//        standardize.setInputFormat(data);
+//        Normalize normalize = new Normalize();
+//        normalize.setInputFormat(data);
+        var norm = getNormalization(data, normalization);
+        return Filter.useFilter(data, (Filter) Objects.requireNonNull(norm));
+    }
+
+    @SneakyThrows(Exception.class)
+    private Object getNormalization(Instances data, Normalization normalization) {
+        switch (normalization){
+            case NORMALIZATION -> {
+                Normalize normalize = new Normalize();
+                normalize.setInputFormat(data);
+                return normalize;
+            }
+            case STANDARDIZATION -> {
+                Standardize standardize = new Standardize();
+                standardize.setInputFormat(data);
+                return standardize;
+            }
+            case null, default -> {
+                return null;
+            }
+        }
     }
 
     private Map<String, Object> getStringObjectMap(List<Country> countries, int i, int[] assignments) {
@@ -133,7 +162,8 @@ public class ClusteringService {
         return measure.getMeasureStatus();
     }
 
-    private Instances prepareDataForClustering(List<Country> countries) {
+    private Instances prepareDataForClustering(List<Country> countries
+            , Normalization normalization) {
         FastVector attributes = new FastVector();
         attributes.addElement(new Attribute("GDP"));
         attributes.addElement(new Attribute("birthrate"));
@@ -154,7 +184,7 @@ public class ClusteringService {
                 }
         );
 
-        return standardization(data);
+        return standardization(data, normalization);
     }
 
     private Instance getInstance(Country country) {
