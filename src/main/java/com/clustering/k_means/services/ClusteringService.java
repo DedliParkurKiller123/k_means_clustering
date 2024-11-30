@@ -75,6 +75,7 @@ public class ClusteringService {
     }
 
     public List<Map<String, Object>> getAllClusteredData() {
+//        allData.forEach(System.out::println);
         return allData;
     }
 
