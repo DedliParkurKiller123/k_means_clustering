@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -74,9 +75,16 @@ public class CsvService {
         }
     }
 
-    private void clearRecords(CountryRepository countryRepository) {
-        if (countryRepository.count() != 0){
+    @Transactional
+    public void clearRecords(CountryRepository countryRepository) {
+        if (countryRepository.existsAllByIdCountryIsNotNull()){
             countryRepository.deleteAll();
+            countryRepository.resetIdSequence();
         }
+    }
+
+    @Transactional
+    public List<Country> getDataSet() {
+        return countryRepository.findCountriesStream().collect(Collectors.toList());
     }
 }

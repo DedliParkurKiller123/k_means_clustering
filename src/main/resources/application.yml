@@ -13,10 +13,12 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
   datasource:
     username: ${db_username}
     url: ${db_url}
     password: ${db_password}
+
 
 server:
   error:

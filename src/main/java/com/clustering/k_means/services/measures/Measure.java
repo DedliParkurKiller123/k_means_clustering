@@ -2,7 +2,6 @@ package com.clustering.k_means.services.measures;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.commons.text.similarity.CosineDistance;
 import weka.core.*;
 
 @AllArgsConstructor

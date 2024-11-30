@@ -2,11 +2,12 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:8080/api/kmeans/clustering';
 
-export const doClustering = (numberOfClusters, measure) => {
+export const doClustering = (numberOfClusters, measure, norm) => {
     return axios.get(`${API_URL}/do-clustering`, {
         params: {
             clusters: numberOfClusters,
-            measure: measure
+            measure: measure,
+            norm: norm
         }
     });
 };

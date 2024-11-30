@@ -55,6 +55,25 @@ button:hover {
   margin: 20px;
 }
 
+.center-button {
+  display: block; /* Дозволяє контролювати вирівнювання */
+  margin: 20px auto; /* Вирівнює по центру горизонтально та додає відступ зверху і знизу */
+  padding: 10px 20px; /* Задає внутрішні відступи */
+  font-size: 16px; /* Розмір тексту */
+  background-color: #4CAF50; /* Колір кнопки */
+  color: white; /* Колір тексту */
+  border: none; /* Забирає рамку */
+  border-radius: 5px; /* Задає закруглені кути */
+  cursor: pointer; /* Вказує, що елемент клікабельний */
+  text-align: center; /* Центрує текст */
+  transition: background-color 0.3s; /* Плавний перехід кольору при наведенні */
+}
+
+.center-button:hover {
+  background-color: #45a049; /* Змінює колір при наведенні */
+}
+
+
 .clustering-table {
   width: 100%;
   border-collapse: collapse;

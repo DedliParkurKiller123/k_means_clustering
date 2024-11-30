@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import weka.filters.UnsupervisedFilter;
 
 import java.util.List;
 import java.util.Map;
@@ -32,17 +31,26 @@ public class ClusteringController {
 
     @GetMapping("/get-all-clustering-data")
     public ResponseEntity<List<Map<String,Object>>> getAllClusteringData() {
-        return ResponseEntity.ok(clusteringService.getAllClusteredData());
+        return ResponseEntity.ok(clusteringService
+                .getAllClusteredData());
     }
 
     @GetMapping("/get-point-clustering-data")
     public ResponseEntity<List<Map<String,Object>>> getPointClusteringData() {
-        return ResponseEntity.ok(clusteringService.getPointClusteredData());
+        return ResponseEntity.ok(clusteringService
+                .getPointClusteredData());
     }
 
     @GetMapping("/get-point-centroids-clustering-data")
     public ResponseEntity<List<Map<String,Double>>> getCentroidsClusteringData() {
-        return ResponseEntity.ok(clusteringService.getCentroidsClusteredData());
+        return ResponseEntity.ok(clusteringService
+                .getCentroidsClusteredData());
+    }
+
+    @GetMapping("/get-inter-clustering-data")
+    public ResponseEntity<List<Map<String,Object>>> getInterClusteringData() {
+        return ResponseEntity.ok(clusteringService
+                .getInterClusteredData());
     }
 
 }

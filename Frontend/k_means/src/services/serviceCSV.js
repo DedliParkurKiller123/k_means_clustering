@@ -12,3 +12,7 @@ export const readCSV = (file) => {
         },
     });
 };
+
+export const getDataSet = ()=>{
+    return axios.get(`${API_URL}/getDataSet`);
+};
